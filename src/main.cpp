@@ -4,6 +4,9 @@
 #define DISPLAY_WIDTH 320
 #define DISPLAY_HEIGHT 240
 
+// 画像表示クラス
+#include "imageshow.hpp"
+
 void showText()
 {
 	// ディスプレイに表示
@@ -106,15 +109,23 @@ void loop() {
 
 	if (M5.BtnA.wasPressed()) {
 		// ボタンAを押したときの振る舞い
-		M5.Lcd.drawRect(x-r, y-r, x+r, y+r, TFT_BLUE);
+		//M5.Lcd.drawRect(x-r, y-r, x+r, y+r, TFT_BLUE);
+
+		// ボタンを押したら画像を表示
+		imageShow.show();
+
 	}
 	if (M5.BtnB.wasPressed()) {
 		// ボタンBを押したときの振る舞い
-		M5.Lcd.drawCircle(x, y, r, TFT_RED);
+		//M5.Lcd.drawCircle(x, y, r, TFT_RED);
+
+		// 明るくする
 	}
 	if (M5.BtnC.wasPressed()) {
 		// ボタンCを押したときの振る舞い
-		M5.Lcd.fillScreen(BLACK);
+		//M5.Lcd.fillScreen(BLACK);
+
+		// 暗くする
 	}
 
 	// ボタンが押されたかを確認するため
