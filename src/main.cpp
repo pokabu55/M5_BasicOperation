@@ -4,13 +4,11 @@
 
 void showText()
 {
-	// 色の指定
-	// M5Stackは、Rが5bit、Gが6ビット、Bが5ビットの16ビットなんだって
-	// なので、普通のRGB それぞれが8ビットで考えるきの変換式は
-	int R = 255;
-	int G = 255;
-	int B = 255;
-	int RGB565 = ((R>>3)<<11) || ((G>>2)<<5) || ((B>>3));
+	// ディスプレイに表示
+	M5.Lcd.print("Hello world!");
+
+	// 四角形の描画
+	M5.Lcd.fillRect(100,100,50,60,TFT_GREEN);
 
 	// 文字列を画面中央に配置
 	int32_t dX = 160;
@@ -23,11 +21,51 @@ void showText()
 	// 画面中央に文字を置く
 	M5.Lcd.drawCentreString("0123456789", dX, poY, fontNo);
 
+	// 試して分かったけど、dX は、値を変えても表示位置は変わらなかった
+	// これ、ダミー変数だった
 	dX = 300;
 	poY = 146;
 	fontNo = 7;
 	M5.Lcd.drawCentreString("0123456789", dX, poY, fontNo);
 
+}
+
+void showText2()
+{
+	// フォントサイズを決める
+	uint8_t fontSize = 2;
+	M5.Lcd.setTextSize(fontSize);
+
+	// 色の指定
+	// M5Stackは、Rが5bit、Gが6ビット、Bが5ビットの16ビットなんだって
+	// なので、普通のRGB それぞれが8ビットで考えるきの変換式は
+	uint8_t R = 255;
+	uint8_t G = 255;
+	uint8_t B = 255;
+	uint16_t RGB565 = ((R>>3)<<11) || ((G>>2)<<5) || ((B>>3));
+	
+	Serial1.printf("%d",RGB565);
+
+	// 文字の色を設定
+	M5.Lcd.setTextColor(RGB565);
+	M5.Lcd.setTextColor(TFT_GREEN);
+
+	// 出力位置
+	int16_t x = 20, y = 20;
+	M5.Lcd.setCursor(x,y);
+
+	// おりかえしをON、デフォルトONなのか？
+	// 折返しがないと、右へ書き続けて表示できなくなる
+	M5.Lcd.setTextWrap(true);
+
+	// 文字列
+	M5.Lcd.println("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+	M5.Lcd.println("012345678901234567890123456789012345678901234567890123456789");
+}
+
+void showImage()
+{
+	M5.Lcd.drawJpgFile(SD, "/umi.jpg", 0, 0);
 }
 
 void setup() {
@@ -39,16 +77,15 @@ void setup() {
 	// LCDの明るさを変更
 	M5.Lcd.setBrightness(128);
 
-	// ディスプレイに表示
-	M5.Lcd.print("Hello world!");
-
-	M5.Lcd.fillRect(100,100,50,60,TFT_GREEN);
-
 	// シリアルを使った print デバッグ
 	Serial.println("done.");
 
 	// 色、位置を指定した文字表示
-	showText();
+	//showText();
+	//showText2();
+
+	// 画像を表示
+	showImage();
 }
 
 void loop() {
