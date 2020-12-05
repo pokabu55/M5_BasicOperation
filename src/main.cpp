@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <M5Stack.h>
 #define LOAD_FONT4
+#define DISPLAY_WIDTH 320
+#define DISPLAY_HEIGHT 240
 
 void showText()
 {
@@ -15,6 +17,7 @@ void showText()
 	int32_t poY = 120;
 
 	// 0~8 をとる。していなければ０で一番小さいフォント
+	// 使える番号は、０，２，４，６，８と
 	// ただし、７はセブンセグメント風フォントで数字だけとなる
 	uint8_t fontNo = 4;
 
@@ -85,9 +88,35 @@ void setup() {
 	//showText2();
 
 	// 画像を表示
-	showImage();
+	//showImage();
+
+	// メッセージ
+	M5.Lcd.drawCentreString("Press any key.", 160, 120, 4);
+
+	// 乱数の初期化
+	randomSeed(analogRead(0));
 }
 
 void loop() {
 	// put your main code here, to run repeatedly:
+
+	long x = random(0, DISPLAY_WIDTH);
+	long y = random(0, DISPLAY_HEIGHT);
+	long r = random(0, 200);
+
+	if (M5.BtnA.wasPressed()) {
+		// ボタンAを押したときの振る舞い
+		M5.Lcd.drawRect(x-r, y-r, x+r, y+r, TFT_BLUE);
+	}
+	if (M5.BtnB.wasPressed()) {
+		// ボタンBを押したときの振る舞い
+		M5.Lcd.drawCircle(x, y, r, TFT_RED);
+	}
+	if (M5.BtnC.wasPressed()) {
+		// ボタンCを押したときの振る舞い
+		M5.Lcd.fillScreen(BLACK);
+	}
+
+	// ボタンが押されたかを確認するため
+	M5.update();
 }
