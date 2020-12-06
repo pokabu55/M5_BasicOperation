@@ -7,6 +7,11 @@
 // 画像表示クラス
 #include "imageshow.hpp"
 
+// MPU関係
+#include "utility/MPU9250.h"
+// MPU9250（9軸センサ）のオブジェクト
+MPU9250 IMU;
+
 void showText()
 {
 	// ディスプレイに表示
@@ -84,7 +89,7 @@ void setup() {
 	M5.Lcd.setBrightness(128);
 
 	// シリアルを使った print デバッグ
-	Serial.println("done.");
+	//Serial.println("done.");
 
 	// 色、位置を指定した文字表示
 	//showText();
@@ -98,6 +103,14 @@ void setup() {
 
 	// 乱数の初期化
 	//randomSeed(analogRead(0));
+
+	// MPUに必要な初期化
+	{
+		// I2C初期化
+		Wire.begin();
+		// MPU9250初期化
+		IMU.initMPU9250();
+	}
 }
 
 void loop() {
@@ -106,6 +119,8 @@ void loop() {
 	/*long x = random(0, DISPLAY_WIDTH);
 	long y = random(0, DISPLAY_HEIGHT);
 	long r = random(0, 200);*/
+	float fx,fy, fz;
+	String msg;
 
 	if (M5.BtnA.wasPressed()) {
 		// ボタンAを押したときの振る舞い
@@ -151,4 +166,42 @@ void loop() {
 
 	// ボタンが押されたかを確認するため
 	M5.update();
+
+	// 9軸センサの読み取りまで待つ
+	{
+		if  (IMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
+			msg = "-";
+
+			// 加速度の取得
+			IMU.readAccelData(IMU.accelCount);
+
+			// aResの値を撮る
+			IMU.getAres();
+			fx = IMU.accelCount[0] * IMU.aRes;
+			fy = IMU.accelCount[1] * IMU.aRes;
+			fz = IMU.accelCount[2] * IMU.aRes;
+
+			Serial.printf("(%f, %f, %f\n", fx, fy, fz);
+
+			// 向きを判定
+			if (abs(fx) > 0.5) {
+				msg  = (fx < 0.f) ? "RIGHT":"LEFT";
+			}
+			if (abs(fy) > 0.5) {
+				msg  = (fy < 0.f) ? "BACK":"FRONT";
+			}
+			if (abs(fz) > 0.5) {
+				msg  = (fz < 0.f) ? "DOWN":"UP";
+			}
+
+			M5.Lcd.clear();
+
+			M5.Lcd.drawCentreString(msg, 160, 120, 4);
+
+			// すぐの更新は意味がないので
+			delay(500);
+		}
+
+	}
+
 }
