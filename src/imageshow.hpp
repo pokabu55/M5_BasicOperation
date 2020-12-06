@@ -11,10 +11,19 @@ private:
     // 表示可能枚数
     int32_t imageNum_;
 
+
 public:
     ImageShow();
 
+    void moveNextImage();
     void show();
+    void brighten();
+    void darken();
+    void setBrightness();
+    
+    // 表示している画像の明るさの割合
+    int32_t brightnessRatio_;
+    int32_t brightStep_;
 
 };
 

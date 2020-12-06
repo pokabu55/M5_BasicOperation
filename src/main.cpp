@@ -97,19 +97,22 @@ void setup() {
 	M5.Lcd.drawCentreString("Press any key.", 160, 120, 4);
 
 	// 乱数の初期化
-	randomSeed(analogRead(0));
+	//randomSeed(analogRead(0));
 }
 
 void loop() {
 	// put your main code here, to run repeatedly:
 
-	long x = random(0, DISPLAY_WIDTH);
+	/*long x = random(0, DISPLAY_WIDTH);
 	long y = random(0, DISPLAY_HEIGHT);
-	long r = random(0, 200);
+	long r = random(0, 200);*/
 
 	if (M5.BtnA.wasPressed()) {
 		// ボタンAを押したときの振る舞い
 		//M5.Lcd.drawRect(x-r, y-r, x+r, y+r, TFT_BLUE);
+
+		// 画像送り機能
+		imageShow.moveNextImage();
 
 		// ボタンを押したら画像を表示
 		imageShow.show();
@@ -119,13 +122,31 @@ void loop() {
 		// ボタンBを押したときの振る舞い
 		//M5.Lcd.drawCircle(x, y, r, TFT_RED);
 
+		Serial.println("BtnB Pressed-1.");
 		// 明るくする
+		imageShow.brighten();
+
+		Serial.println("BtnB Pressed-2.");
+		Serial.printf("ratio = %d\n", imageShow.brightnessRatio_);
+
+		// ボタンを押したら画像を表示
+		imageShow.show();
+
+		Serial.println("BtnB Pressed-3.");
 	}
 	if (M5.BtnC.wasPressed()) {
 		// ボタンCを押したときの振る舞い
 		//M5.Lcd.fillScreen(BLACK);
 
+		Serial.println("BtnC Pressed.");
+
 		// 暗くする
+		imageShow.darken();
+
+		Serial1.printf("ratio = %d\n", imageShow.brightnessRatio_);
+
+		// ボタンを押したら画像を表示
+		imageShow.show();
 	}
 
 	// ボタンが押されたかを確認するため
