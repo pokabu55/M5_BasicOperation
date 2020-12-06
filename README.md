@@ -40,6 +40,8 @@ M5Stackでの基本動作のテスト用リポジトリ
 * VSCode の左下のボタンの並びにプラグマークがあるので、本体実行後にクリック
 * VSCode のターミナルに表示される
 
-### LCDの基礎
-* [公式のリンク](https://docs.m5stack.com/#/ja/api/lcd)にあります。
+### 本家の参考サイト
+* [github](https://github.com/m5stack/M5Core2)
+* [LCDのAPI](https://docs.m5stack.com/#/ja/api/lcd)にあります。
+* [API](https://docs.m5stack.com/#/ja/api)
 
