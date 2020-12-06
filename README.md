@@ -40,6 +40,17 @@ M5Stackでの基本動作のテスト用リポジトリ
 * VSCode の左下のボタンの並びにプラグマークがあるので、本体実行後にクリック
 * VSCode のターミナルに表示される
 
+### 9軸センサの使い方
+* main.cpp に以下のようにインクルード
+```
+  #include "utility/MPU9250.h"
+```
+* センサのオブジェクトを記述
+```
+  MPU9250 IMU;
+```
+* これだけで、使えるようになった
+
 ### 本家の参考サイト
 * [github](https://github.com/m5stack/M5Core2)
 * [LCDのAPI](https://docs.m5stack.com/#/ja/api/lcd)にあります。
