@@ -11,6 +11,9 @@
 #include "utility/MPU9250.h"
 // MPU9250（9軸センサ）のオブジェクト
 MPU9250 IMU;
+bool initShow = true;
+int32_t directionNo = -1;
+int32_t oldDirNo = 0;
 
 void showText()
 {
@@ -79,6 +82,28 @@ void showImage()
 	M5.Lcd.drawJpgFile(SD, "/umi.jpg", 0, 0);
 }
 
+
+int32_t getDirectionNo(float fx, float fy) {
+
+	// 向きを判定
+	if (abs(fx) > 0.5) {
+		if (fx < 0.f)
+			return 2;
+		else
+			return 3;
+	}
+	if (abs(fy) > 0.5) {
+		if (fy < 0.f)
+			return 4;
+		else
+			return 1;
+	}
+
+	// 当てはまらない
+	return -1;
+}
+
+
 void setup() {
 	// put your setup code here, to run once:
 
@@ -122,6 +147,7 @@ void loop() {
 	float fx,fy, fz;
 	String msg;
 
+#if 0
 	if (M5.BtnA.wasPressed()) {
 		// ボタンAを押したときの振る舞い
 		//M5.Lcd.drawRect(x-r, y-r, x+r, y+r, TFT_BLUE);
@@ -166,9 +192,11 @@ void loop() {
 
 	// ボタンが押されたかを確認するため
 	M5.update();
+#endif
 
-	// 9軸センサの読み取りまで待つ
+#if 0
 	{
+		// 9軸センサの読み取りまで待つ
 		if  (IMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
 			msg = "-";
 
@@ -202,6 +230,62 @@ void loop() {
 			delay(500);
 		}
 
+	}
+#endif
+
+	{
+		// 9軸センサの読み取りまで待つ
+		if  (IMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
+
+			// 加速度の取得
+			IMU.readAccelData(IMU.accelCount);
+
+			// aResの値を取る
+			IMU.getAres();
+			fx = IMU.accelCount[0] * IMU.aRes;
+			fy = IMU.accelCount[1] * IMU.aRes;
+			fz = fabs(IMU.accelCount[2] * IMU.aRes);
+
+			Serial.printf("(%f, %f, %f\n", fx, fy, fz);
+
+			if (fz > 0.5) {
+				// 画面OFF
+				imageShow.hidden();
+				initShow = true;
+			}
+			else {
+				// 初期の向きを取る
+				directionNo = getDirectionNo(fx, fy);
+
+				Serial.printf("dirNo = %d\n", directionNo);
+
+				if (initShow) {
+					// 画面ON
+					imageShow.setNextImage(directionNo-1);
+					imageShow.show();
+					initShow = false;
+
+					oldDirNo = directionNo;
+				}
+				else {
+					// 前の向きと違う
+					if (oldDirNo != directionNo) {
+
+						// 画像番号をインクリメント
+						//imageShow.moveNextImage();
+						imageShow.setNextImage(directionNo-1);
+
+						// 表示
+						imageShow.show();
+						oldDirNo = directionNo;
+					}
+				}
+			}
+
+
+			// すぐの更新は意味がないので
+			delay(500);
+		}
 	}
 
 }
