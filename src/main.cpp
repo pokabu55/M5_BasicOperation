@@ -7,6 +7,8 @@
 // 画像表示クラス
 #include "imageshow.hpp"
 
+float bfreq = 0.f;
+
 void showText()
 {
 	// ディスプレイに表示
@@ -41,9 +43,6 @@ void showText2()
 	// フォントサイズを決める
 	uint8_t fontSize = 2;
 	M5.Lcd.setTextSize(fontSize);
-	
-	Serial1.printf("%d",RGB565);
-
 }
 
 void showImage()
@@ -56,6 +55,9 @@ void setup() {
 
 	// M5Stackの初期化
 	M5.begin();
+
+	// スピーカーの初期化
+	M5.Speaker.begin();
 
 	// LCDの明るさを変更
 	M5.Lcd.setBrightness(128);
@@ -70,14 +72,44 @@ void setup() {
 void loop() {
 	// put your main code here, to run repeatedly:
 
-	if (M5.BtnA.wasPressed()) {
+	float freq[] = { 261.6,
+					329.6,
+					392.6};
+	float nowFreq;
+
+	// 押している間、という実装にする
+	bool pressed = false;
+
+	if (M5.BtnA.read()) {
 		// ボタンAを押したときの振る舞い
+
+		// ド
+		nowFreq = freq[0];
+		pressed = true;
 	}
-	if (M5.BtnB.wasPressed()) {
+	if (M5.BtnB.read()) {
 		// ボタンBを押したときの振る舞い
+		nowFreq = freq[1];
+		pressed = true;
 	}
-	if (M5.BtnC.wasPressed()) {
+	if (M5.BtnC.read()) {
 		// ボタンCを押したときの振る舞い
+		nowFreq = freq[2];
+		pressed = true;
+	}
+
+	if (pressed) {
+		// 押されている
+		// 前回と変わったときだけ音程を変える
+		if (bfreq != nowFreq) {
+			M5.Speaker.tone(nowFreq);
+			bfreq = nowFreq;
+		}
+	}
+	else {
+		// 押されていない場合は、止める
+		M5.Speaker.mute();
+		bfreq = 0;
 	}
 
 	// ボタンが押されたかを確認するため
