@@ -9,6 +9,7 @@ M5Stackでの基本動作のテスト用リポジトリ
 ## 前準備
 ### USBドライバーの設定
 * したはずだが…。覚えてない。適当にググってね。
+* これいらない？
 
 ### PlatformIO にてプロジェクトを追加
 * 任意のディレクトリにプロジェクトを作成
@@ -29,6 +30,20 @@ M5Stackでの基本動作のテスト用リポジトリ
 * VSCode で、PIOを入れれば、VSCodeのウィンドウ左下にあるボタンで操作可能
 * チェックマークを押すとビルドされる
 * 右矢印を押すと、USB接続されたM5Stackに転送され、自動実行される
+
+* 転送にエラーが出た場合、エラーメッセージに従って下記のサイトにアクセス
+* [ここ](https://docs.platformio.org/en/latest/faq.html#platformio-udev-rules)
+* 指示通りに端末で下記の操作を実施
+```
+# Recommended
+curl -fsSL https://raw.githubusercontent.com/platformio/platformio-core/master/scripts/99-platformio-udev.rules | sudo tee /etc/udev/rules.d/99-platformio-udev.rules
+
+sudo service udev restart
+
+sudo usermod -a -G dialout $USER
+sudo usermod -a -G plugdev $USER
+```
+* 再起動後、転送できるようになりました
 
 ### シリアルによるprintデバッグ
 * platformio.ini に `monitor_speed = 115200` と追記
